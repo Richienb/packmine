@@ -21,10 +21,12 @@ const dirs = (() => {
     return pdirs.length ? pdirs : [__dirname]
 })()
 
+const loadJSON = (filepath: string) => JSON.parse(fs.readFileSync(filepath, "utf8"))
+
 const processDir = async (dir: string) => {
     const spinner = ora(`Processing ${dir}`).start()
     // TODO: Allow regular pack.mcmeta
-    const conf = require(path.join(dir, "pack.json"))
+    const conf = loadJSON(path.join(dir, "pack.mcmeta"))
 
     const createZip = (filename: string, pack_format: number, transforms: Function) => {
         const output = fs.createWriteStream(`${filename}.zip`)
