@@ -40,7 +40,19 @@ const processDir = async (dir: string) => {
         conf.pack.pack_format = pack_format
         archive.append(JSON.stringify(conf, null, 4), { name: "pack.mcmeta" })
 
+        // archive.directoryIf = (d: string, dst = d) => fs.access(path.join(dir, d), fs.constants.F_OK, (err) => {
+        //     if (!err) archive.directory(path.join(dir, d), dst)
+        // });
+
+        archive.directoryIf = (d: string, dst = d) => {
+            if (fs.existsSync(path.join(dir, d))) archive.directory(path.join(dir, d), dst)
+        }
+
         if (fs.existsSync(path.join(dir, "pack.png"))) archive.append(fs.createReadStream(path.join(dir, "pack.png")), { name: "pack.png" })
+
+        // fs.access(path.join(dir, "pack.png"), fs.constants.F_OK, (err) => {
+        //     if (!err) archive.append(fs.createReadStream(path.join(dir, "pack.png")), { name: "pack.png" })
+        // })
 
         transforms(archive)
 
@@ -49,26 +61,32 @@ const processDir = async (dir: string) => {
 
     // Java Edition 1.13
     createZip(`${path.basename(dir)}-1.13`, 4, (archive: any) => {
-        if (fs.existsSync(path.join(dir, "assets"))) archive.directory(path.join(dir, "assets"), "assets")
-        if (fs.existsSync(path.join(dir, "data"))) archive.directory(path.join(dir, "data"), "data")
+        archive.directoryIf("assets")
+        archive.directoryIf("data")
     })
 
     // Java Edition 1.11 - 1.12
     createZip(`${path.basename(dir)}-1.11-1.12`, 3, (archive: any) => {
         // Assets
-        if (fs.existsSync(path.join(dir, "assets"))) archive.directory(path.join(dir, "assets"), "assets")
+        archive.directoryIf("assets")
+
+        // Items
+        archive.directoryIf(path.join("assets", "minecraft", "textures", "item"), path.join("assets", "minecraft", "textures", "items"))
+
+        // Blocks
+        archive.directoryIf(path.join(dir, "assets", "minecraft", "textures", "block"), path.join("assets", "minecraft", "textures", "blocks"))
 
         // Advancements datapack
-        if (fs.existsSync(path.join(dir, "data", "minecraft", "advancements"))) archive.directory(path.join(dir, "data", "minecraft", "advancements"), "advancements")
+        archive.directoryIf(path.join(dir, "data", "minecraft", "advancements"), "advancements")
 
         // Loot tables datapack
-        if (fs.existsSync(path.join(dir, "data", "minecraft", "loot_tables"))) archive.directory(path.join(dir, "data", "minecraft", "loot_tables"), "loot_tables")
+        archive.directoryIf(path.join(dir, "data", "minecraft", "loot_tables"), "loot_tables")
 
         // Recipes datapack
-        if (fs.existsSync(path.join(dir, "data", "minecraft", "recipes"))) archive.directory(path.join(dir, "data", "minecraft", "recipes"), "recipes")
+        archive.directoryIf(path.join(dir, "data", "minecraft", "recipes"), "recipes")
 
         // Structures datapack
-        if (fs.existsSync(path.join(dir, "data", "minecraft", "structures"))) archive.directory(path.join(dir, "data", "minecraft", "structures"), "structures")
+        archive.directoryIf(path.join(dir, "data", "minecraft", "structures"), "structures")
     })
 
     // Java Edition 1.10
