@@ -19,7 +19,7 @@
         "chalk": "^2.4.2",
         "commander": "^3.0.1",
         "ora": "^3.4.0",
-        "typescript": "^3.6.2"
+        "typescript": "^3.6.3"
     },
     "devDependencies": {
         "@types/bluebird": "^3.5.27",
