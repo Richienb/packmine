@@ -22,7 +22,7 @@
         "typescript": "^3.7.2"
     },
     "devDependencies": {
-        "@types/bluebird": "^3.5.28",
+        "@types/bluebird": "^3.5.29",
         "@types/node": "^12.12.7",
         "@typescript-eslint/eslint-plugin": "^1.9.0",
         "eslint": "^5.16.0",
